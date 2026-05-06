@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced OpenID Connect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/black.min.css">
+<style>
+  :root {
+    --amber:  #f5a623;
+    --green:  #4ecb8d;
+    --purple: #a78bfa;
+    --blue:   #60a5fa;
+    --red:    #f87171;
+    --bg:     #0a0a0f;
+    --bg2:    #10101a;
+    --bg3:    #181824;
+    --border: #2a2a3a;
+    --text:   #e8e8f0;
+    --muted:  #8888a8;
+  }
+
+  .reveal-viewport { background: var(--bg); }
+  .reveal .slides section { background: transparent; }
+
+  .reveal { font-family: 'DM Sans', sans-serif; color: var(--text); }
+  .reveal h1, .reveal h2, .reveal h3 { font-family: 'Playfair Display', serif; font-weight: 700; }
+  .reveal h1 { font-size: 1.6em; color: var(--amber); line-height: 1.1; }
+  .reveal h2 { font-size: 1.1em; color: var(--amber); margin-bottom: .2em; }
+  .reveal h3 { font-size: .78em; color: var(--green); margin-bottom: .15em; }
+  .reveal p  { font-size: .56em; line-height: 1.45; color: var(--text); }
+  .reveal li { font-size: .54em; line-height: 1.45; margin-bottom: .1em; }
+  .reveal code { font-family: 'JetBrains Mono', monospace; font-size: .72em; }
+  .reveal pre  { box-shadow: none; background: var(--bg3); border: 1px solid var(--border);
+                 border-radius: 6px; padding: .3em .5em; margin: .25em 0; }
+  .reveal pre code { font-size: .52em; line-height: 1.35; background: transparent; color: #cdd6f4; }
+
+  .slide-hdr {
+    display: flex; align-items: center; gap: .4em;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: .2em; margin-bottom: .3em;
+  }
+  .slide-hdr .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .42em; font-weight: 500;
+    color: var(--bg); background: var(--amber);
+    padding: .1em .4em; border-radius: 3px;
+    letter-spacing: .04em;
+  }
+  .slide-hdr h2 { margin: 0; font-size: .95em; }
+
+  .cols   { display: grid; gap: .5em; }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .cols-6040 { grid-template-columns: 6fr 4fr; }
+  .cols-4060 { grid-template-columns: 4fr 6fr; }
+
+  .card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 6px; padding: .35em .6em;
+  }
+  .card.amber { border-left: 3px solid var(--amber); }
+  .card.green { border-left: 3px solid var(--green); }
+  .card.purple{ border-left: 3px solid var(--purple); }
+  .card.blue  { border-left: 3px solid var(--blue); }
+  .card.red   { border-left: 3px solid var(--red); }
+  .card h3 { font-size: .64em; margin: 0 0 .12em; }
+  .card p  { font-size: .52em; margin: 0; color: #b8b8d0; }
+  .card ul { margin: 0; padding-left: 1em; }
+  .card li { font-size: .52em; color: #b8b8d0; margin-bottom: .02em; }
+
+  .reveal table { width: 100%; border-collapse: collapse; font-size: .5em; }
+  .reveal table th { background: var(--bg3); color: var(--amber); font-weight: 600;
+                     padding: .2em .4em; border: 1px solid var(--border); text-align: left; }
+  .reveal table td { padding: .18em .4em; border: 1px solid var(--border); color: #ccc; }
+  .reveal table tr:nth-child(even) td { background: #0e0e18; }
+
+  .a  { color: var(--amber); font-weight: 600; }
+  .g  { color: var(--green); font-weight: 600; }
+  .p  { color: var(--purple); font-weight: 600; }
+  .b  { color: var(--blue); font-weight: 600; }
+  .r  { color: var(--red); font-weight: 600; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  svg.diagram { display: block; margin: 0 auto; overflow: visible; }
+
+  .pill {
+    display: inline-block; font-family: 'JetBrains Mono', monospace;
+    font-size: .44em; padding: .08em .4em; border-radius: 99px;
+    border: 1px solid; margin: 0 .08em;
+  }
+  .pill.amber { color: var(--amber); border-color: var(--amber); }
+  .pill.green { color: var(--green); border-color: var(--green); }
+  .pill.purple{ color: var(--purple); border-color: var(--purple); }
+  .pill.blue  { color: var(--blue); border-color: var(--blue); }
+
+  .reveal .slide-footer { display: none; }
+  .title-slide h1 { font-size: 1.8em; }
+  .title-slide .subtitle {
+    font-size: .7em; color: var(--green); font-family: 'DM Sans', sans-serif;
+    font-weight: 300; letter-spacing: .04em; margin: .3em 0 .6em;
+  }
+  .title-slide .meta { font-size: .48em; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
+  .ss-row {
+    display: flex; gap: .25em; align-items: center;
+    margin: .1em 0; font-size: .55em; font-family: 'JetBrains Mono', monospace;
+  }
+  .ss-node {
+    padding: .2em .55em; border-radius: 5px; font-size: .9em;
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+  }
+  .ss-node.active { background: #1a2a1a; border-color: var(--green); color: var(--green); }
+  .ss-node.done   { background: #1a1a2a; border-color: var(--purple); color: var(--purple); }
+  .ss-arrow { color: var(--amber); }
+  .ss-label { font-size: .8em; color: var(--muted); margin-left: .3em; }
+
+  .reveal ul, .reveal ol { margin: .15em 0 .15em 1em; }
+.reveal .slides > section { display: flex !important; flex-direction: column !important; overflow-y: auto !important; align-items: stretch !important; justify-content: flex-start !important; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+
+<!-- ═══════════════════════════════ SLIDE 01 — TITLE ═══════════════════════════════ -->
+<section class="title-slide" data-background-color="#0a0a0f">
+  <div style="text-align:left; max-width:820px; margin:0 auto; padding: 1em 0;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:.5em; color:var(--muted); margin-bottom:.4em; letter-spacing:.1em;">
+      TECHNICAL PRESENTATION &middot; ADVANCED COMPANION
+    </div>
+    <h1>Advanced<br>OpenID Connect</h1>
+    <div class="subtitle">Hardening &middot; Federation &middot; Wallet-Era &middot; Operational</div>
+    <div style="width:60px; height:3px; background:var(--amber); margin-bottom:1.4em;"></div>
+    <div style="display:flex; gap:1.2em; flex-wrap:wrap; margin-bottom:1em;">
+      <span class="pill amber">FAPI 2.0</span>
+      <span class="pill green">Federation 1.0</span>
+      <span class="pill purple">SIOPv2 + VCI / VP</span>
+      <span class="pill blue">Workload OIDC</span>
+    </div>
+    <div class="ss-row" style="margin-top:0.6em;">
+      <span class="ss-node active">PAR</span>
+      <span class="ss-arrow">→</span>
+      <span class="ss-node active">JAR / JARM</span>
+      <span class="ss-arrow">→</span>
+      <span class="ss-node active">DPoP / mTLS</span>
+      <span class="ss-arrow">→</span>
+      <span class="ss-node done">Trust Chain</span>
+      <span class="ss-arrow">→</span>
+      <span class="ss-node done">Wallet</span>
+    </div>
+    <p style="max-width:660px; color:#a0a0c0; font-size:.56em; line-height:1.5; margin-top:1em;">
+      The deep end of OpenID Connect: the validation edge cases, the high-security profiles, the federation specs that are actually being deployed in 2026, the wallet-era stack (EUDI / mDL), and the operational patterns for production OPs.
+    </p>
+    <div class="meta" style="margin-top:1.4em;">
+      Harden &nbsp;·&nbsp; Federate &nbsp;·&nbsp; Issue &amp; Present &nbsp;·&nbsp; Operate
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 02 — TOPICS ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">01</span>
+    <h2>Topics — Four Chapters</h2>
+  </div>
+  <div class="cols cols-2">
+    <div>
+      <div class="card amber">
+        <h3 class="a">A &middot; Hardening</h3>
+        <ul>
+          <li>The validation edge cases that break in prod</li>
+          <li>Audience wars — <code>aud</code>, <code>azp</code>, multi-audience tokens</li>
+          <li>Pairwise / public subject identifiers</li>
+          <li>PAR · JAR · JARM · request_uri</li>
+          <li>FAPI 2.0 — what it actually requires</li>
+          <li>mTLS · <code>private_key_jwt</code> · DPoP — beyond bearer</li>
+          <li>Logout, properly — RP-initiated · back-channel · front-channel</li>
+          <li>Token Exchange &amp; on-behalf-of</li>
+        </ul>
+      </div>
+      <div class="card green" style="margin-top:0.5em;">
+        <h3 class="g">B &middot; Federation</h3>
+        <ul>
+          <li>OpenID Federation 1.0 — trust chains in detail</li>
+          <li>Entity statements, trust marks, intermediates</li>
+          <li>eIDAS 2.0 + EUDI Wallet ecosystem</li>
+          <li>Real-world federations: Open Banking, eHealth, education</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card purple">
+        <h3 class="p">C &middot; Wallet-Era</h3>
+        <ul>
+          <li>SIOPv2 — Self-Issued OPs, who is the IdP now?</li>
+          <li>OpenID4VCI — issuing Verifiable Credentials</li>
+          <li>OpenID4VP — presenting them</li>
+          <li>Mobile Driving Licence (ISO/IEC 18013-5/-7)</li>
+          <li>SD-JWT VC and DID-based subjects</li>
+        </ul>
+      </div>
+      <div class="card blue" style="margin-top:0.5em;">
+        <h3 class="b">D &middot; Operational</h3>
+        <ul>
+          <li>Workload OIDC deep dive (GHA · GCP · Azure · K8s)</li>
+          <li>Aggregated &amp; distributed claims · the <code>claims</code> parameter</li>
+          <li>UX of MFA — <code>prompt</code>, <code>max_age</code>, <code>acr_values</code>, <code>amr</code></li>
+          <li>Observability — what to log, what to alert on</li>
+          <li>Migration playbooks — SAML→OIDC, monolith→OP</li>
+          <li>Reference architectures by domain</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 03 — VALIDATION EDGE CASES ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">02</span>
+    <h2>A1 &middot; ID-Token Validation Edge Cases</h2>
+  </div>
+  <p>Every OIDC implementer learns the eight basic checks (signature, <code>iss</code>, <code>aud</code>, <code>exp</code>, <code>iat</code>, <code>nonce</code>, <code>azp</code>, <code>at_hash</code>). The bugs that cost you money live <em>between</em> them.</p>
+
+  <div class="cols cols-2" style="margin-top:0.4em;">
+    <div>
+      <div class="card red">
+        <h3 class="r">Clock skew &amp; the &plusmn;5-minute lie</h3>
+        <ul>
+          <li>Most libraries default to a 30–60 s leeway. Mobile clients and serverless cold-starts blow that.</li>
+          <li>Symptom: intermittent <em>"token used before <code>nbf</code>"</em> errors at midnight DST changeovers and on freshly-spawned Lambda containers.</li>
+          <li>Fix: NTP everywhere, leeway ≤ 60 s, <em>monitor</em> for skew. Don't quietly raise leeway to 300 s — you've just created an unsigned-replay window.</li>
+        </ul>
+      </div>
+      <div class="card red" style="margin-top:0.4em;">
+        <h3 class="r"><code>kid</code>-less tokens &amp; key roll-over</h3>
+        <ul>
+          <li>OPs publish multiple keys in JWKS. Tokens without a <code>kid</code> force the RP to try every key — a CPU-burn DoS surface.</li>
+          <li>During roll-over, both old and new keys live in JWKS for ~24 h. RPs that cache JWKS for &gt;24 h fail at the cutover.</li>
+          <li>Fix: refuse <code>kid</code>-less tokens; cache JWKS 5–60 min; refresh on unknown <code>kid</code>; alert if &gt;1 % of tokens trigger a refresh.</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card red">
+        <h3 class="r">Algorithm confusion</h3>
+        <ul>
+          <li>Per-RP allow-list, not per-OP. <code>alg=none</code> permanently rejected.</li>
+          <li>HS256 vs RS256 confusion attack: an attacker mints an HS256 token whose secret is <em>your</em> public RSA key, copy-pasted from JWKS. Naïve libraries accept it.</li>
+          <li>Fix: pin the expected <code>alg</code> and the expected key type; never let the token's header pick the verification key class.</li>
+        </ul>
+      </div>
+      <div class="card red" style="margin-top:0.4em;">
+        <h3 class="r"><code>nonce</code> binding</h3>
+        <ul>
+          <li>Generated client-side per request, sent on <code>/authorize</code>, must be reflected in the ID token.</li>
+          <li>Servers that store the <code>nonce</code> in a cookie and check it after redirect have a CSRF-on-callback problem if the cookie isn't <code>SameSite=Lax</code>.</li>
+          <li>Fix: bind <code>nonce</code> to the user's session (not a global cookie), validate then delete.</li>
+        </ul>
+      </div>
+      <div class="card red" style="margin-top:0.4em;">
+        <h3 class="r">Multi-tenant <code>iss</code> drift</h3>
+        <ul>
+          <li>Microsoft Entra issues per-tenant <code>iss</code> URLs. RPs that pin one issuer break for guest users.</li>
+          <li>Fix: validate against an issuer template (e.g. <code>https://login.microsoftonline.com/{tid}/v2.0</code>) and explicitly check <code>tid</code>.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 04 — AUD WARS ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">03</span>
+    <h2>A2 &middot; The <code>aud</code> Wars — Multi-Audience &amp; <code>azp</code></h2>
+  </div>
+  <p>The <code>aud</code> claim is permitted to be a string <em>or</em> an array. The <code>azp</code> (authorized party) claim is required <em>iff</em> there is more than one audience. Most bugs in this area come from RPs that don't treat <code>aud</code> as <em>both</em>.</p>
+
+  <div class="cols cols-2" style="margin-top:0.3em;">
+    <div>
+      <div class="card amber">
+        <h3 class="a">The spec rule, plainly</h3>
+        <ul>
+          <li><code>aud</code> MUST contain the RP's client_id.</li>
+          <li>If <code>aud</code> has more than one value, <code>azp</code> MUST be present and equal to the party who started this flow.</li>
+          <li>If <code>aud</code> has more than one value <em>and</em> the RP is not <code>azp</code>, the RP MUST NOT trust the token as identity for itself.</li>
+        </ul>
+      </div>
+      <div class="card green" style="margin-top:0.4em;">
+        <h3 class="g">A single-audience token (typical)</h3>
+<pre><code>{
+  "iss":  "https://login.acme.com/",
+  "sub":  "user_42",
+  "aud":  "client_web_app",
+  "exp":  1800003600,
+  "iat":  1800000000,
+  "nonce":"a7c…",
+  "auth_time": 1800000000
+}</code></pre>
+      </div>
+      <div class="card purple" style="margin-top:0.4em;">
+        <h3 class="p">A multi-audience token (sharing across siblings)</h3>
+<pre><code>{
+  "iss":  "https://login.acme.com/",
+  "sub":  "user_42",
+  "aud":  ["client_web_app","client_billing_api"],
+  "azp":  "client_web_app",     // who started this
+  ...
+}</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card red">
+        <h3 class="r">The bug that bites</h3>
+        <p>RP <em>billing_api</em> receives the multi-audience ID token above and decides: <em>"my client_id is in <code>aud</code>, therefore this is my user logging in."</em> No — <code>azp</code> says the user logged into <em>web_app</em>. Promoting that ID-token <code>sub</code> to a session in <em>billing_api</em> is identity hijacking via a sibling app.</p>
+      </div>
+      <div class="card amber" style="margin-top:0.4em;">
+        <h3 class="a">Four guarded patterns</h3>
+        <ol style="padding-left:1.2em;">
+          <li><span class="g">Single-aud only.</span> Refuse multi-aud unless you have a specific reason. Most OPs let you turn this off.</li>
+          <li><span class="g">If multi-aud,</span> require <code>azp</code> and refuse if <code>azp != my_client_id</code>.</li>
+          <li><span class="g">Distributed claims</span> arrive in a different document fetched via <code>_claim_sources</code> — they have their own <code>iss</code> and <code>aud</code>, validate independently.</li>
+          <li><span class="g">Aggregated claims</span> are signed JWTs embedded in the ID token. Validate as if they were standalone tokens.</li>
+        </ol>
+      </div>
+      <div class="card blue" style="margin-top:0.4em;">
+        <h3 class="b">Mnemonic</h3>
+        <p>"<em><code>aud</code> says where the token is welcome; <code>azp</code> says who actually walked through the door.</em>"</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 05 — PAIRWISE SUBJECTS ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">04</span>
+    <h2>A3 &middot; Pairwise &amp; Public Subject Identifiers</h2>
+  </div>
+  <p>The <code>sub</code> claim is the single most consequential identifier in OIDC. The same physical user can intentionally appear with <em>different</em> <code>sub</code>s to different RPs, depending on the OP's <code>subject_type</code> setting.</p>
+
+  <div class="cols cols-2" style="margin-top:0.4em;">
+    <div>
+      <div class="card amber">
+        <h3 class="a">Two subject types</h3>
+        <ul>
+          <li><span class="g">public</span> — the same <code>sub</code> for that user across every RP at the OP. Easy to correlate; suitable inside one trust boundary.</li>
+          <li><span class="g">pairwise</span> — a per-RP pseudonymous <code>sub</code>. A user looks like a different identifier to every RP. Required for unlinkability (eIDAS, Apple Sign-In).</li>
+        </ul>
+      </div>
+      <div class="card green" style="margin-top:0.4em;">
+        <h3 class="g">How pairwise actually works</h3>
+        <p>The OP computes <code>sub = HMAC(seed, sector_id || local_user_id)</code>. The <em>sector identifier</em> groups RPs that share a <code>sub</code> namespace.</p>
+<pre><code># RP advertises a sector via sector_identifier_uri
+GET https://app.example/.well-known/oidc-sector-uris
+
+[
+  "https://app.example/cb",
+  "https://eu.app.example/cb",
+  "https://api.app.example/exchange"
+]</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card purple">
+        <h3 class="p">When to insist on pairwise</h3>
+        <ul>
+          <li>You're a <em>public</em> OP serving many third-party RPs and want to limit cross-app tracking.</li>
+          <li>Regulatory privacy regimes (eIDAS LoA High, NHS data sharing, Apple).</li>
+          <li>You operate a B2C ecosystem and want one user record but distinct external IDs.</li>
+        </ul>
+      </div>
+      <div class="card red" style="margin-top:0.4em;">
+        <h3 class="r">Common foot-gun</h3>
+        <p>Migrating an OP from <code>public</code> to <code>pairwise</code> after launch — every existing user changes <code>sub</code>, every RP loses its account-binding. Plan a dual-write or a <code>sub_legacy</code> claim before you flip.</p>
+      </div>
+      <div class="card blue" style="margin-top:0.4em;">
+        <h3 class="b">Sign in with Apple — the canonical pairwise OP</h3>
+        <p>Apple issues pairwise <code>sub</code>s by default; the user can also choose to <em>hide</em> their email, in which case Apple inserts a relay address. Different <code>sub</code> per-app, no cross-RP correlation possible.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 06 — PAR ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">05</span>
+    <h2>A4 &middot; Pushed Authorization Requests (PAR) — RFC 9126</h2>
+  </div>
+  <p>Classical OIDC stuffs every authorisation parameter into the front-channel URL. <span class="a">PAR</span> instead POSTs them to a back-channel endpoint up-front, gets back a one-time <code>request_uri</code>, and uses that on <code>/authorize</code>.</p>
+
+  <svg class="diagram" viewBox="0 0 940 240" width="900" height="240">
+    <rect x="20"  y="20" width="160" height="38" rx="5" fill="#1a1a2a" stroke="#f5a623" stroke-width="1.5"/>
+    <text x="100" y="44" text-anchor="middle" fill="#f5a623" font-family="Playfair Display,serif" font-size="13" font-weight="700">RP</text>
+    <rect x="430" y="20" width="160" height="38" rx="5" fill="#1a1a2a" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="510" y="44" text-anchor="middle" fill="#a78bfa" font-family="Playfair Display,serif" font-size="13" font-weight="700">OP</text>
+    <rect x="740" y="20" width="160" height="38" rx="5" fill="#1a1a2a" stroke="#60a5fa" stroke-width="1.5"/>
+    <text x="820" y="44" text-anchor="middle" fill="#60a5fa" font-family="Playfair Display,serif" font-size="13" font-weight="700">User-Agent</text>
+
+    <line x1="100" y1="58" x2="100" y2="220" stroke="#2a2a3a" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="510" y1="58" x2="510" y2="220" stroke="#2a2a3a" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="820" y1="58" x2="820" y2="220" stroke="#2a2a3a" stroke-width="1" stroke-dasharray="3,3"/>
+
+    <line x1="180" y1="80"  x2="430" y2="80"  stroke="#f5a623" stroke-width="1.4" marker-end="url(#a05a)"/>
+    <text x="305" y="75" text-anchor="middle" fill="#f5a623" font-family="JetBrains Mono,monospace" font-size="10">1. POST /par  client_auth + all params</text>
+    <line x1="430" y1="105" x2="180" y2="105" stroke="#a78bfa" stroke-width="1.4" marker-end="url(#a05p)"/>
+    <text x="305" y="100" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono,monospace" font-size="10">2. { request_uri: "urn:ietf:params:…", expires_in: 60 }</text>
+    <line x1="180" y1="135" x2="740" y2="135" stroke="#f5a623" stroke-width="1.2" marker-end="url(#a05a)"/>
+    <text x="460" y="130" text-anchor="middle" fill="#f5a623" font-family="JetBrains Mono,monospace" font-size="10">3. redirect user to /authorize?client_id=…&amp;request_uri=urn:…</text>
+    <line x1="740" y1="160" x2="510" y2="160" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#a05b)"/>
+    <text x="625" y="155" text-anchor="middle" fill="#60a5fa" font-family="JetBrains Mono,monospace" font-size="10">4. GET /authorize?…request_uri=…</text>
+    <line x1="510" y1="185" x2="180" y2="185" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#a05p)"/>
+    <text x="345" y="180" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono,monospace" font-size="10">5. login + consent → 302 cb?code=…&amp;state=…</text>
+
+    <text x="455" y="215" text-anchor="middle" fill="#888" font-family="DM Sans,sans-serif" font-size="11">Front-channel URL now carries only <tspan font-family="JetBrains Mono,monospace">client_id</tspan> + <tspan font-family="JetBrains Mono,monospace">request_uri</tspan> &middot; no parameter tampering by user.</text>
+
+    <defs>
+      <marker id="a05a" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#f5a623"/></marker>
+      <marker id="a05p" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#a78bfa"/></marker>
+      <marker id="a05b" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#60a5fa"/></marker>
+    </defs>
+  </svg>
+
+  <div class="cols cols-2" style="margin-top:0.2em;">
+    <div class="card amber">
+      <h3 class="a">Why PAR matters</h3>
+      <ul>
+        <li><span class="g">Integrity</span> — the request is authenticated up-front. The user-agent can't tamper with scope, redirect_uri or PKCE challenge.</li>
+        <li><span class="g">Privacy</span> — sensitive parameters (claims, login_hint with email) never touch the URL bar / referer / browser history.</li>
+        <li><span class="g">URL length</span> — large parameter sets (rich auth requests, claims JSON) don't blow up the GET URL.</li>
+        <li><span class="g">Required by FAPI 2.0.</span></li>
+      </ul>
+    </div>
+    <div class="card green">
+      <h3 class="g">PAR + JAR — even tighter</h3>
+      <p>Combine PAR with JAR (RFC 9101) and the parameters in the <code>/par</code> body are themselves a signed/encrypted JWT (a <code>request</code> object). The OP knows the parameters came from the legitimate RP, not just <em>via</em> it. That's the FAPI 2.0 baseline.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 07 — JAR / JARM ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">06</span>
+    <h2>A5 &middot; JAR &amp; JARM — Signed Requests &amp; Responses</h2>
+  </div>
+
+  <div class="cols cols-2">
+    <div>
+      <div class="card amber">
+        <h3 class="a">JAR — JWT-Secured Authorization Request (RFC 9101)</h3>
+<pre><code># the request object — a JWS (often signed with RP's
+# private_key_jwt key)
+{
+  "iss":  "client_web_app",
+  "aud":  "https://op.example",
+  "response_type": "code",
+  "client_id": "client_web_app",
+  "redirect_uri": "https://app/cb",
+  "scope": "openid profile email",
+  "state": "X9d…",
+  "nonce": "a7c…",
+  "code_challenge": "e9k…",
+  "code_challenge_method": "S256",
+  "claims": { "id_token": { "acr": { "essential": true,
+                                     "values": ["urn:mfa"] } } }
+}
+
+# delivered either as
+GET /authorize?request=eyJhbGc…   (by-value)
+# or referenced
+GET /authorize?request_uri=https://rp/req/abc   (by-reference)
+# (PAR is the formal "by-reference" mechanism — preferred)</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card green">
+        <h3 class="g">JARM — JWT-Secured Authorization Response Mode</h3>
+<pre><code># instead of  ?code=…&amp;state=…
+GET /cb?response=eyJhbGciOiJSUzI1NiI…
+
+# decoded payload
+{
+  "iss":  "https://op.example",
+  "aud":  "client_web_app",
+  "exp":  1800000300,
+  "code": "AUTH_CODE",
+  "state": "X9d…"
+}</code></pre>
+        <ul>
+          <li>The OP signs the response itself, end-to-end.</li>
+          <li>Defeats <em>response-splitting</em>, mix-up, and tampered <code>iss</code>/<code>state</code>.</li>
+          <li>Required by FAPI 2.0 alongside PAR.</li>
+        </ul>
+      </div>
+      <div class="card purple" style="margin-top:0.4em;">
+        <h3 class="p">When to use what</h3>
+        <table>
+          <thead><tr><th>Threat</th><th>Mitigation</th></tr></thead>
+          <tbody>
+            <tr><td>Tampered request params</td><td>JAR / PAR</td></tr>
+            <tr><td>Tampered response params</td><td>JARM</td></tr>
+            <tr><td>Stolen authorisation code</td><td>PKCE + sender-constrained tokens</td></tr>
+            <tr><td>Mix-up across multiple OPs</td><td>JARM (signed <code>iss</code>) + RFC 9207 <code>iss</code> param</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 08 — FAPI 2.0 ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">07</span>
+    <h2>A6 &middot; FAPI 2.0 — Financial-Grade OIDC</h2>
+  </div>
+  <p><span class="a">FAPI 2.0</span> (Final, 2024) is the OpenID Foundation's hardened profile of OAuth/OIDC, originally for Open Banking. It is now also the baseline for several health, government, and high-value B2B ecosystems. It comes in two parts.</p>
+
+  <div class="cols cols-2" style="margin-top:0.4em;">
+    <div>
+      <div class="card amber">
+        <h3 class="a">FAPI 2.0 Security Profile (the baseline)</h3>
+        <ul>
+          <li>Authorisation Code only — no Implicit, no Hybrid.</li>
+          <li><span class="g">PAR</span> required for all requests.</li>
+          <li><span class="g">PKCE S256</span> required.</li>
+          <li>Client authentication: <span class="g"><code>private_key_jwt</code></span> or <span class="g">tls_client_auth</span> — no shared secrets.</li>
+          <li>Sender-constrained tokens: <span class="g">DPoP</span> or <span class="g">mTLS</span> on every API call.</li>
+          <li>Strict <code>redirect_uri</code> string match.</li>
+          <li>Resource Indicators (RFC 8707) on every <code>/par</code>.</li>
+        </ul>
+      </div>
+      <div class="card green" style="margin-top:0.4em;">
+        <h3 class="g">FAPI 2.0 Message Signing (the optional add-on)</h3>
+        <ul>
+          <li>Adds end-to-end signing of the request (JAR) and response (JARM) — non-repudiation, not just integrity.</li>
+          <li>Mandatory in some ecosystems (Open Banking Brazil, Australia CDR).</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card purple">
+        <h3 class="p">Where it's actually deployed</h3>
+        <ul>
+          <li><span class="a">UK Open Banking</span> — FAPI 1 → FAPI 2.</li>
+          <li><span class="a">Open Banking Brazil</span> — FAPI 2 + Message Signing.</li>
+          <li><span class="a">Australia Consumer Data Right (CDR)</span>.</li>
+          <li><span class="a">Saudi Open Banking</span>, <span class="a">Open Finance Brazil</span>, several EU PSD2 sandboxes.</li>
+          <li><span class="a">Smart Health Card / FHIR</span> in some jurisdictions.</li>
+        </ul>
+      </div>
+      <div class="card blue" style="margin-top:0.4em;">
+        <h3 class="b">Conformance matters</h3>
+        <p>FAPI is <em>certified</em>. The OpenID Foundation runs a public conformance suite at <code>openid.net/certification</code>. Many ecosystems require a passing certificate before you can register a production client. Don't roll your own.</p>
+      </div>
+      <div class="card red" style="margin-top:0.4em;">
+        <h3 class="r">If you only know one thing</h3>
+        <p>The FAPI 2.0 cheat-line: <span class="a">PAR + PKCE + DPoP/mTLS + private_key_jwt + Resource Indicators</span>. If your stack is missing any of those for a high-value API, you're not FAPI-grade.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 09 — MTLS / DPOP / PRIVATE KEY JWT ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">08</span>
+    <h2>A7 &middot; mTLS &middot; <code>private_key_jwt</code> &middot; DPoP</h2>
+  </div>
+  <p>Three different ways to bind a token (or the request that mints it) to a key only the legitimate party controls.</p>
+
+  <table>
+    <thead><tr><th>Mechanism</th><th>What it protects</th><th>How it works</th><th>Operational cost</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="a"><code>private_key_jwt</code></span> (RFC 7523)</td>
+        <td>Client → AS authentication on <code>/token</code>, <code>/par</code>, <code>/register</code></td>
+        <td>Client signs a short JWT assertion with its private key; AS verifies via JWKS the client published.</td>
+        <td>Low — RP just hosts a JWKS. Replaces all shared client secrets.</td>
+      </tr>
+      <tr>
+        <td><span class="a">tls_client_auth / mTLS</span> (RFC 8705)</td>
+        <td>Client → AS authentication and sender-constrained access tokens</td>
+        <td>Mutual TLS handshake; AS records cert hash; RS rejects calls whose client cert hash ≠ token's <code>cnf.x5t#S256</code>.</td>
+        <td>Higher — needs PKI, cert rotation, careful TLS termination (edge proxies must not strip client certs).</td>
+      </tr>
+      <tr>
+        <td><span class="a">DPoP</span> (RFC 9449)</td>
+        <td>Sender-constrained access tokens for any client (browser, mobile, CLI)</td>
+        <td>Per-request JWS proof signed by client-generated key; token's <code>cnf.jkt</code> binds to that key's hash.</td>
+        <td>Low for clients, moderate for RS (must implement <code>jti</code> replay cache, <code>htm</code>/<code>htu</code> validation).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="cols cols-2" style="margin-top:0.4em;">
+    <div>
+      <div class="card amber">
+        <h3 class="a">A <code>private_key_jwt</code> client assertion</h3>
+<pre><code>POST /token HTTP/1.1
+Host: op.example
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code&
+code=AUTH&code_verifier=…&
+client_id=client_web_app&
+client_assertion_type=
+  urn:ietf:params:oauth:client-assertion-type:jwt-bearer&
+client_assertion=eyJhbGc…   ← the JWS
+
+# decoded assertion
+{ "iss":"client_web_app", "sub":"client_web_app",
+  "aud":"https://op.example/token",
+  "jti":"e1b7…", "iat":1800000000, "exp":1800000060 }</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card green">
+        <h3 class="g">Picking one</h3>
+        <ul>
+          <li><span class="b">Browser RP</span> → DPoP for sender-constraint, plus public-client (no shared secret).</li>
+          <li><span class="b">Backend RP / API gateway</span> → <code>private_key_jwt</code> + DPoP, or mTLS if PKI exists.</li>
+          <li><span class="b">B2B with mature PKI</span> → mTLS end-to-end (banking, eIDAS).</li>
+          <li><span class="b">Mobile app</span> → DPoP, with the keypair stored in Secure Enclave / Strongbox.</li>
+        </ul>
+      </div>
+      <div class="card red" style="margin-top:0.4em;">
+        <h3 class="r">Antipattern</h3>
+        <p>Stateless reverse-proxies that terminate TLS and forward the request without surfacing the client cert in a header (<code>X-SSL-Client-Cert</code> or similar). The RS sees a <em>different</em> mTLS endpoint and the cert binding silently drops to nothing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 10 — LOGOUT ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">09</span>
+    <h2>A8 &middot; Logout, Properly</h2>
+  </div>
+  <p>"Sign out" in OIDC is <em>three</em> different specs. They solve different problems and you usually need more than one.</p>
+
+  <div class="cols cols-3" style="margin-top:0.4em;">
+    <div class="card amber">
+      <h3 class="a">RP-Initiated Logout</h3>
+<pre><code>GET /logout?
+  id_token_hint=eyJ…&
+  post_logout_redirect_uri=
+    https://app/bye&
+  state=…</code></pre>
+      <ul>
+        <li>RP sends the user to OP's logout endpoint.</li>
+        <li>OP ends the user's session at the OP.</li>
+        <li>OP redirects back to the RP's <code>post_logout_redirect_uri</code>.</li>
+      </ul>
+      <p style="margin-top:.25em;">Local-RP-driven, top-of-funnel. Doesn't notify other RPs.</p>
+    </div>
+    <div class="card green">
+      <h3 class="g">Back-Channel Logout</h3>
+<pre><code>POST /backchannel-logout HTTP/1.1
+Host: rp.example
+Content-Type: application/x-www-form-urlencoded
+
+logout_token=eyJ…  // a signed JWT
+                   // events: http://schemas.
+                   //   openid.net/event/
+                   //   backchannel-logout</code></pre>
+      <ul>
+        <li>OP POSTs a logout-event JWT to every RP that registered an endpoint.</li>
+        <li>Server-to-server, reliable, behind the user's back.</li>
+        <li>RP destroys the user's session in its own store.</li>
+      </ul>
+      <p style="margin-top:.25em;">The pattern that actually works at scale.</p>
+    </div>
+    <div class="card purple">
+      <h3 class="p">Front-Channel Logout</h3>
+<pre><code>&lt;!-- OP's logout page --&gt;
+&lt;iframe src="https://rp1/fcl?
+                  iss=…&amp;sid=…"&gt;
+&lt;iframe src="https://rp2/fcl?
+                  iss=…&amp;sid=…"&gt;</code></pre>
+      <ul>
+        <li>OP renders one hidden iframe per RP; each iframe nukes its session cookie.</li>
+        <li>Browser-only; no server-to-server channel needed.</li>
+        <li>Fragile — third-party cookie blocking and CSP can break it silently.</li>
+      </ul>
+      <p style="margin-top:.25em;">Use only as a fallback when back-channel isn't available.</p>
+    </div>
+  </div>
+
+  <div class="card blue" style="margin-top:0.4em;">
+    <h3 class="b">A pattern that actually ends every session</h3>
+    <p>Pair <span class="a">RP-Initiated</span> (so the user feels logged out at the OP) with <span class="a">Back-Channel</span> (so other RPs are reliably told). Use <span class="a">Front-Channel</span> only for legacy RPs that can't host a back-channel endpoint. Always check the <code>sid</code>/<code>events</code>/<code>iss</code> claims on the logout token — and confirm the token came from the OP you actually used.</p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 11 — TOKEN EXCHANGE ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">10</span>
+    <h2>A9 &middot; Token Exchange &amp; On-Behalf-Of (RFC 8693)</h2>
+  </div>
+  <p>A user-bearing token at API A, an authenticated request <em>from</em> A to downstream API B that needs to preserve the original user identity. Token Exchange is the standardised way; it's also Microsoft's "OBO" flow.</p>
+
+  <div class="cols cols-6040" style="margin-top:0.4em;">
+    <div>
+      <div class="card amber">
+        <h3 class="a">The exchange</h3>
+<pre><code>POST /token HTTP/1.1
+Host: op.example
+Authorization: Basic base64(api_a:secret)
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn:ietf:params:oauth:grant-type:token-exchange&
+
+# the inbound token API A received from the user
+subject_token=eyJ…   &amp;
+subject_token_type=urn:ietf:params:oauth:token-type:access_token&
+
+# (optional) act-on-behalf-of identity
+actor_token=eyJ…    &amp;
+actor_token_type=urn:ietf:params:oauth:token-type:jwt&
+
+# what API A needs at API B
+audience=https://api-b.example&
+scope=invoices:read
+
+# response — a token usable by API A to call API B,
+# with both 'sub' (the user) and 'act' (API A) preserved
+{ "access_token": "eyJ…",
+  "issued_token_type":
+     "urn:ietf:params:oauth:token-type:access_token",
+  "token_type": "Bearer",
+  "expires_in": 600 }</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card green">
+        <h3 class="g">Why this matters</h3>
+        <ul>
+          <li>API B can audit: <em>"user U, acting via API A"</em>.</li>
+          <li>API B can enforce its own scopes for U, regardless of what U granted at A.</li>
+          <li>The user's original token isn't replayed — defeats confused-deputy.</li>
+        </ul>
+      </div>
+      <div class="card purple" style="margin-top:0.4em;">
+        <h3 class="p">In the resulting token</h3>
+<pre><code>{ "iss":"op.example",
+  "sub":"user_42",       // original user
+  "aud":"api-b",
+  "scope":"invoices:read",
+  "act": { "sub":"api_a" } // who acted on their behalf
+}</code></pre>
+      </div>
+      <div class="card blue" style="margin-top:0.4em;">
+        <h3 class="b">Naming map</h3>
+        <p>Microsoft <em>"OBO"</em>, AWS Cognito <em>"token vending"</em>, Auth0 <em>"token exchange"</em>, Keycloak <em>"token exchange feature"</em> — all RFC 8693 with vendor garnish.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 12 — FEDERATION 1.0 ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">11</span>
+    <h2>B1 &middot; OpenID Federation 1.0 — Trust Chains</h2>
+  </div>
+  <p><span class="a">OpenID Federation 1.0</span> (final, Sep 2024) replaces "every RP statically configures every OP" with cryptographically verifiable <em>trust chains</em>. It's how you scale OIDC across thousands of organisations.</p>
+
+  <svg class="diagram" viewBox="0 0 940 280" width="900" height="280">
+    <!-- Trust anchor -->
+    <rect x="380" y="20" width="200" height="50" rx="8" fill="#1a1a2a" stroke="#f5a623" stroke-width="2"/>
+    <text x="480" y="42" text-anchor="middle" fill="#f5a623" font-family="Playfair Display,serif" font-size="14" font-weight="700">Trust Anchor</text>
+    <text x="480" y="60" text-anchor="middle" fill="#ccc" font-family="JetBrains Mono,monospace" font-size="10">e.g. NHS / eIDAS / EduGAIN</text>
+
+    <!-- Intermediates -->
+    <line x1="480" y1="70"  x2="200" y2="110" stroke="#888" stroke-width="1.2"/>
+    <line x1="480" y1="70"  x2="760" y2="110" stroke="#888" stroke-width="1.2"/>
+    <rect x="80"  y="110" width="240" height="50" rx="6" fill="#1a1a2a" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="200" y="132" text-anchor="middle" fill="#a78bfa" font-family="Playfair Display,serif" font-size="13" font-weight="700">Intermediate</text>
+    <text x="200" y="150" text-anchor="middle" fill="#ccc" font-family="JetBrains Mono,monospace" font-size="10">e.g. one country in eIDAS</text>
+    <rect x="640" y="110" width="240" height="50" rx="6" fill="#1a1a2a" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="760" y="132" text-anchor="middle" fill="#a78bfa" font-family="Playfair Display,serif" font-size="13" font-weight="700">Intermediate</text>
+    <text x="760" y="150" text-anchor="middle" fill="#ccc" font-family="JetBrains Mono,monospace" font-size="10">e.g. a hospital trust</text>
+
+    <!-- Leaves -->
+    <line x1="200" y1="160" x2="120" y2="200" stroke="#888" stroke-width="1.2"/>
+    <line x1="200" y1="160" x2="280" y2="200" stroke="#888" stroke-width="1.2"/>
+    <line x1="760" y1="160" x2="680" y2="200" stroke="#888" stroke-width="1.2"/>
+    <line x1="760" y1="160" x2="840" y2="200" stroke="#888" stroke-width="1.2"/>
+    <rect x="40"  y="200" width="160" height="46" rx="5" fill="#1a1a2a" stroke="#4ecb8d"/>
+    <text x="120" y="222" text-anchor="middle" fill="#4ecb8d" font-family="JetBrains Mono,monospace" font-size="10">leaf — RP (Bank A)</text>
+    <text x="120" y="238" text-anchor="middle" fill="#888" font-family="JetBrains Mono,monospace" font-size="9">issues entity statement</text>
+    <rect x="220" y="200" width="160" height="46" rx="5" fill="#1a1a2a" stroke="#4ecb8d"/>
+    <text x="300" y="222" text-anchor="middle" fill="#4ecb8d" font-family="JetBrains Mono,monospace" font-size="10">leaf — OP (eIDAS node)</text>
+    <text x="300" y="238" text-anchor="middle" fill="#888" font-family="JetBrains Mono,monospace" font-size="9">issues entity statement</text>
+    <rect x="600" y="200" width="160" height="46" rx="5" fill="#1a1a2a" stroke="#4ecb8d"/>
+    <text x="680" y="222" text-anchor="middle" fill="#4ecb8d" font-family="JetBrains Mono,monospace" font-size="10">leaf — OP (NHS Trust)</text>
+    <text x="680" y="238" text-anchor="middle" fill="#888" font-family="JetBrains Mono,monospace" font-size="9">issues entity statement</text>
+    <rect x="780" y="200" width="160" height="46" rx="5" fill="#1a1a2a" stroke="#4ecb8d"/>
+    <text x="860" y="222" text-anchor="middle" fill="#4ecb8d" font-family="JetBrains Mono,monospace" font-size="10">leaf — RP (FHIR API)</text>
+    <text x="860" y="238" text-anchor="middle" fill="#888" font-family="JetBrains Mono,monospace" font-size="9">issues entity statement</text>
+
+    <text x="465" y="270" text-anchor="middle" fill="#888" font-family="DM Sans,sans-serif" font-size="11">Each node publishes a <tspan font-family="JetBrains Mono,monospace">/.well-known/openid-federation</tspan> entity statement signed by its parent. RP follows the chain to the trust anchor.</text>
+  </svg>
+
+  <div class="cols cols-2" style="margin-top:0.2em;">
+    <div class="card amber">
+      <h3 class="a">Building blocks</h3>
+      <ul>
+        <li><span class="g">Entity Statement</span> — JWT a federation participant publishes about itself + its parent.</li>
+        <li><span class="g">Subordinate Statement</span> — JWT a parent publishes about a child (incl. policy clipping).</li>
+        <li><span class="g">Trust Mark</span> — third-party signed assertion (e.g. "this RP passed FAPI 2.0 conformance").</li>
+        <li><span class="g">Metadata Policy</span> — parent can constrain child's metadata (max TTLs, required signing algs).</li>
+      </ul>
+    </div>
+    <div class="card green">
+      <h3 class="g">Why now</h3>
+      <p>eIDAS 2.0 / EUDI Wallet, the EU eHealth Network, the Brazilian Open Insurance ecosystem, EduGAIN's OIDC profile — all standardised on Federation 1.0 in late 2024 / 2025 because per-pair pre-registration is intractable at country scale.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 13 — EIDAS / EUDI ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">12</span>
+    <h2>B2 &middot; eIDAS 2.0 &amp; the EUDI Wallet Ecosystem</h2>
+  </div>
+  <p><span class="a">eIDAS 2.0</span> (in force May 2024; member-state rollout to 2026) requires every EU Member State to issue an interoperable <span class="a">EU Digital Identity Wallet (EUDIW)</span>. It is the largest planned deployment of OIDC + Verifiable Credentials in the world.</p>
+
+  <div class="cols cols-2" style="margin-top:0.4em;">
+    <div>
+      <div class="card amber">
+        <h3 class="a">The architecture (in OIDC terms)</h3>
+        <ul>
+          <li><span class="g">PID Provider</span> = OIDC OP issuing the citizen's Person Identification Data as a Verifiable Credential (often via OpenID4VCI).</li>
+          <li><span class="g">EUDI Wallet</span> = a Self-Issued OP (SIOPv2) on the citizen's phone that holds the credentials and presents them on demand.</li>
+          <li><span class="g">Relying Party</span> = the bank, employer, gov-service. Talks OpenID4VP to the wallet.</li>
+          <li><span class="g">Trust Framework</span> = OpenID Federation 1.0 + EU-managed trust anchors (one per member state).</li>
+        </ul>
+      </div>
+      <div class="card green" style="margin-top:0.4em;">
+        <h3 class="g">Levels of Assurance (LoA)</h3>
+        <ul>
+          <li><span class="b">Low</span> — username/password equivalent. Not enough for most regulated use.</li>
+          <li><span class="a">Substantial</span> — the bar for online banking, eHealth, eGovernment portals.</li>
+          <li><span class="r">High</span> — required for things like opening a regulated account; needs hardware-bound key on the phone (Secure Enclave / TEE).</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card purple">
+        <h3 class="p">Why a developer outside the EU should still care</h3>
+        <ul>
+          <li>The EU is forcing every "Very Large Online Platform" (DSA) to <em>accept</em> EUDI Wallet logins by 2027.</li>
+          <li>Apple, Google, Microsoft, Amazon, Meta — and any equivalent-scale non-EU SaaS — must implement the RP side.</li>
+          <li>The patterns ratified here (SIOPv2 + OpenID4VP + Federation 1.0) are being copied by Australia (TDIF), Canada (PCTF), Brazil (gov.br), Singapore (Singpass).</li>
+        </ul>
+      </div>
+      <div class="card blue" style="margin-top:0.4em;">
+        <h3 class="b">Reference implementations to look at</h3>
+        <ul>
+          <li><span class="a">EU Reference Implementation</span> — github.com/eu-digital-identity-wallet</li>
+          <li><span class="a">SPID/CIE-OIDC</span> (Italy) — production OpenID Federation network at scale.</li>
+          <li><span class="a">Sphereon / Mattr / Procivis</span> — commercial wallet SDKs.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 14 — SIOPV2 + VCI + VP ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">13</span>
+    <h2>C1 &middot; The Wallet Stack — SIOPv2 + VCI + VP</h2>
+  </div>
+  <p>The wallet-era OIDC is three coordinated specs. Each is a small extension of OIDC that swaps "the OP is a server in the cloud" for "the OP is the user's device".</p>
+
+  <div class="cols cols-3" style="margin-top:0.4em;">
+    <div class="card amber">
+      <h3 class="a">SIOPv2 — Self-Issued OPs</h3>
+      <ul>
+        <li>A re-skin of OIDC where the wallet on the phone is the OP.</li>
+        <li><code>iss</code> = a DID or a JWK thumbprint, not an HTTPS URL.</li>
+        <li>Discovery is replaced by static metadata; dynamic registration is replaced by the wallet trusting any RP that asks.</li>
+        <li>Solves: "log into a website using nothing but a phone".</li>
+      </ul>
+    </div>
+    <div class="card green">
+      <h3 class="g">OpenID4VCI — Issuance</h3>
+      <ul>
+        <li>Issuer (gov, university, employer) speaks <em>this</em> spec to push a VC into the user's wallet.</li>
+        <li>Two flows: <em>pre-authorised code</em> (paper letter with a QR — the EU baseline) and <em>authorisation code</em> (browser flow).</li>
+        <li>Credential format negotiated: <span class="a">SD-JWT VC</span>, <span class="a">mDoc/mDL</span>, <span class="a">W3C VC-JWT</span>.</li>
+      </ul>
+    </div>
+    <div class="card purple">
+      <h3 class="p">OpenID4VP — Presentation</h3>
+      <ul>
+        <li>RP asks the wallet for credentials matching a <em>presentation_definition</em> (DIF Presentation Exchange syntax).</li>
+        <li>Wallet shows the user the request, gets consent, returns selectively-disclosed claims via <span class="a">SD-JWT</span> or <span class="a">mdoc selective disclosure</span>.</li>
+        <li>The RP never sees claims the user didn't reveal — true minimisation.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card blue" style="margin-top:0.5em;">
+    <h3 class="b">A worked sequence — a bank verifies your driving licence</h3>
+    <ol style="padding-left:1.2em;">
+      <li>Bank's RP renders a QR encoding an <em>OpenID4VP</em> request: "give me <code>given_name</code>, <code>date_of_birth</code>, <code>document_number</code> from a credential of type <code>org.iso.18013.5.1.mDL</code>".</li>
+      <li>User scans QR with EUDI Wallet. Wallet matches the request to a stored mDL credential.</li>
+      <li>Wallet shows: <em>"OakBank wants to see name, DoB, licence number from your driving licence — Allow?"</em></li>
+      <li>User approves with biometrics; wallet signs an SD-JWT presentation revealing <em>only</em> those three fields.</li>
+      <li>Bank's RP verifies the wallet's signature, checks the issuer's trust chain (OpenID Federation 1.0), accepts.</li>
+    </ol>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 15 — MDL ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">14</span>
+    <h2>C2 &middot; ISO mDL &middot; The Other Half of the Wallet World</h2>
+  </div>
+  <p>Not all wallet-era credentials live in the OIDC tent. The <span class="a">Mobile Driving Licence</span> (mDL) is defined by <span class="a">ISO/IEC 18013-5</span> (NFC / BLE proximity) and <span class="a">ISO/IEC 18013-7</span> (online presentation). Most major US states and many EU/Asia jurisdictions are deploying it.</p>
+
+  <div class="cols cols-2" style="margin-top:0.4em;">
+    <div>
+      <div class="card amber">
+        <h3 class="a">Two presentation modes</h3>
+        <ul>
+          <li><span class="g">In-person (18013-5)</span> — over NFC or BLE. Wallet on phone, reader on the bouncer's terminal. No internet required. CBOR + COSE.</li>
+          <li><span class="g">Online (18013-7)</span> — over the web. The bridge to OIDC: 18013-7 reuses <span class="a">OpenID4VP</span> as its transport.</li>
+        </ul>
+      </div>
+      <div class="card green" style="margin-top:0.4em;">
+        <h3 class="g">Why a backend dev should know about it</h3>
+        <ul>
+          <li>You'll be asked to consume mDL/mDoc credentials presented via OpenID4VP.</li>
+          <li>The credential format isn't JSON — it's CBOR-encoded mdoc with COSE signatures. Use a library; do not parse by hand.</li>
+          <li>Issuer trust is rooted in <em>government</em> root CAs, not the public web PKI.</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card purple">
+        <h3 class="p">SD-JWT VC vs mDoc — when each</h3>
+        <table>
+          <thead><tr><th>&nbsp;</th><th>SD-JWT VC</th><th>mDoc / mDL</th></tr></thead>
+          <tbody>
+            <tr><td>Encoding</td><td>JSON / JWT</td><td>CBOR / COSE</td></tr>
+            <tr><td>Origin</td><td>IETF / OIDF</td><td>ISO TC 204</td></tr>
+            <tr><td>Selective disclosure</td><td>SD-JWT</td><td>mdoc disclosure</td></tr>
+            <tr><td>Online flow</td><td>OpenID4VP</td><td>OpenID4VP (18013-7)</td></tr>
+            <tr><td>Offline / proximity</td><td>n/a</td><td>NFC / BLE (18013-5)</td></tr>
+            <tr><td>EUDI primary</td><td><span class="g">yes</span></td><td>secondary</td></tr>
+            <tr><td>US state DMV primary</td><td>secondary</td><td><span class="g">yes</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card red" style="margin-top:0.4em;">
+        <h3 class="r">The interop reality in 2026</h3>
+        <p>Both formats are being shipped in parallel. Wallets typically support both; RPs that want broad coverage need both verification paths. OpenID4VP is the common online transport.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 16 — WORKLOAD OIDC ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">15</span>
+    <h2>D1 &middot; Workload OIDC Deep Dive</h2>
+  </div>
+  <p>OIDC isn't just for human logins. Modern CI/CD and Kubernetes use it to issue <em>workload</em> identities — short-lived JWTs that replace long-lived API keys.</p>
+
+  <div class="cols cols-2">
+    <div>
+      <div class="card amber">
+        <h3 class="a">GitHub Actions → AWS</h3>
+<pre><code># GHA mints an OIDC token
+permissions:
+  id-token: write
+steps:
+  - uses: aws-actions/configure-aws-credentials@v4
+    with:
+      role-to-assume: arn:aws:iam::123:role/deploy
+      aws-region: eu-west-1
+
+# AWS STS verifies via
+# https://token.actions.githubusercontent.com/.well-known/jwks
+# and assumes the role if the token's
+# 'sub' = "repo:org/repo:ref:refs/heads/main"
+# matches the role's trust policy</code></pre>
+      </div>
+      <div class="card green" style="margin-top:0.4em;">
+        <h3 class="g">GitHub Actions → GCP</h3>
+        <ul>
+          <li>Workload Identity Pool + Provider; pool trusts <code>token.actions.githubusercontent.com</code>.</li>
+          <li>Action calls <code>google-github-actions/auth</code>; receives a short-lived GCP access token.</li>
+          <li>No long-lived service-account JSON keys anywhere in the repo or CI.</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card purple">
+        <h3 class="p">Kubernetes &mdash; ServiceAccountTokenVolumeProjection</h3>
+        <ul>
+          <li>Pod mounts a projected token at <code>/var/run/secrets/tokens/gha</code> with a configurable <code>aud</code>.</li>
+          <li>Token is a JWT signed by the cluster's OIDC issuer (<code>kubectl get --raw /.well-known/openid-configuration</code>).</li>
+          <li>External services (HashiCorp Vault, AWS, GCP) trust the cluster OIDC issuer; no Kubernetes secrets ever leave the cluster.</li>
+          <li>This is how SPIRE / SPIFFE bootstraps and how Istio does workload identity.</li>
+        </ul>
+      </div>
+      <div class="card blue" style="margin-top:0.4em;">
+        <h3 class="b">Trust-policy hygiene</h3>
+        <ul>
+          <li>Always pin <code>sub</code>, not just <code>iss</code> + <code>aud</code> — otherwise <em>any</em> repo at <code>token.actions.githubusercontent.com</code> can assume the role.</li>
+          <li>Pin <code>repository_owner</code> + <code>repository</code> + branch / environment.</li>
+          <li>Cache JWKS sensibly; rotate IAM role trust if the OIDC issuer rotates keys.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 17 — CLAIMS ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">16</span>
+    <h2>D2 &middot; Aggregated &amp; Distributed Claims, the <code>claims</code> Parameter</h2>
+  </div>
+
+  <div class="cols cols-2">
+    <div>
+      <div class="card amber">
+        <h3 class="a">The <code>claims</code> request parameter</h3>
+        <p>Most RPs accept whatever default claims the OP sends. The <code>claims</code> parameter (OIDC Core §5.5) lets you ask for specific claims, mark them <em>essential</em>, and even pin acceptable values.</p>
+<pre><code>POST /par
+claims={
+  "id_token": {
+    "acr":           { "essential": true,
+                       "values": ["urn:mace:incommon:iap:gold"] },
+    "auth_time":     { "essential": true },
+    "email":         null,
+    "email_verified":{ "essential": true, "value": true }
+  },
+  "userinfo": {
+    "given_name":  null,
+    "family_name": null,
+    "address":     { "essential": true }
+  }
+}</code></pre>
+        <p style="margin-top:.25em;">"<em>Essential</em>" lets the OP know <em>"if you can't satisfy this, prompt the user / step up — don't silently issue a weaker assertion."</em></p>
+      </div>
+    </div>
+    <div>
+      <div class="card green">
+        <h3 class="g">Aggregated claims</h3>
+        <p>The OP embeds a <em>second</em> signed JWT inside the ID token, issued by a different authority. Useful when, say, the user's age-of-majority is asserted by a government issuer but their email is asserted by the social OP.</p>
+<pre><code>// inside the ID token
+"_claim_names":   { "age_over_18": "src1" },
+"_claim_sources": {
+  "src1": { "JWT": "eyJ…signed-by-gov-issuer…" }
+}</code></pre>
+      </div>
+      <div class="card purple" style="margin-top:0.4em;">
+        <h3 class="p">Distributed claims</h3>
+        <p>Same idea, but instead of an embedded JWT the OP gives you a URL + a token to fetch the claim from a separate authority.</p>
+<pre><code>"_claim_names":   { "tax_status": "src2" },
+"_claim_sources": {
+  "src2": {
+    "endpoint": "https://hmrc.example/claims/4321",
+    "access_token": "eyJ…"
+  }
+}</code></pre>
+      </div>
+      <div class="card red" style="margin-top:0.4em;">
+        <h3 class="r">Validate them as if they were standalone tokens</h3>
+        <p>Different <code>iss</code>, different <code>aud</code>, different <code>exp</code>. The bug to avoid is treating an aggregated claim as if the parent OP's signature blessed it — only the <em>inner</em> issuer can vouch for the inner claim.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 18 — STEP-UP / MFA UX ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">17</span>
+    <h2>D3 &middot; Demanding MFA — <code>prompt</code>, <code>max_age</code>, <code>acr_values</code>, <code>amr</code></h2>
+  </div>
+  <p>The auth event itself has metadata. These four parameters/claims let an RP demand fresh / strong authentication, and verify it actually happened.</p>
+
+  <table>
+    <thead><tr><th>Parameter / claim</th><th>Direction</th><th>Job</th></tr></thead>
+    <tbody>
+      <tr><td><code>prompt=login</code></td><td>RP → OP, on <code>/authorize</code></td><td>Force re-authentication even if the user has a live SSO session.</td></tr>
+      <tr><td><code>prompt=consent</code></td><td>RP → OP</td><td>Force the consent screen even if remembered.</td></tr>
+      <tr><td><code>prompt=none</code></td><td>RP → OP</td><td>Silent — fail rather than display UI. Useful for token refresh / SSO check.</td></tr>
+      <tr><td><code>max_age=N</code></td><td>RP → OP</td><td>Refuse if the user's last login was more than N seconds ago.</td></tr>
+      <tr><td><code>acr_values</code></td><td>RP → OP</td><td>Request a specific <em>Authentication Context Class</em> — e.g. <code>urn:mace:incommon:iap:silver</code>, or <code>http://eidas.europa.eu/LoA/high</code>.</td></tr>
+      <tr><td><code>auth_time</code></td><td>OP → RP, in ID token</td><td>Unix time of the actual authentication event.</td></tr>
+      <tr><td><code>acr</code></td><td>OP → RP, in ID token</td><td>The class actually achieved (may be lower than requested if the OP couldn't satisfy it).</td></tr>
+      <tr><td><code>amr</code></td><td>OP → RP, in ID token</td><td>Array of methods used: e.g. <code>["pwd","otp"]</code>, <code>["pwd","webauthn"]</code>, <code>["face","hwk"]</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="cols cols-2" style="margin-top:0.4em;">
+    <div class="card amber">
+      <h3 class="a">A typical step-up</h3>
+<pre><code># user is logged in (with password) but is now trying to
+# initiate a £10k transfer. RP forces fresh MFA:
+GET /authorize?
+  client_id=…&
+  scope=openid&
+  prompt=login&
+  max_age=120&
+  acr_values=urn:mace:incommon:iap:gold&
+  claims={"id_token":{"acr":{"essential":true,
+                             "values":["urn:mace:incommon:iap:gold"]}}}
+
+# resulting ID token must include
+"acr": "urn:mace:incommon:iap:gold",
+"amr": ["pwd","webauthn"],
+"auth_time": 1800002000</code></pre>
+    </div>
+    <div class="card red">
+      <h3 class="r">The bug to avoid</h3>
+      <p>Sending <code>acr_values</code> but <em>not</em> verifying the returned <code>acr</code> matches. The OP is allowed to step <em>down</em>; if you don't check, your "MFA-protected" code path runs after a password-only login.</p>
+      <p style="margin-top:.3em;">Always: <em>request as parameter, demand as essential claim, verify on receipt.</em></p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 19 — OBSERVABILITY ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">18</span>
+    <h2>D4 &middot; Observability — What to Log, What to Alert On</h2>
+  </div>
+
+  <div class="cols cols-2">
+    <div>
+      <div class="card amber">
+        <h3 class="a">RP-side metrics</h3>
+        <ul>
+          <li><span class="g"><code>oidc.token.validate.failure{reason}</code></span> — labelled by <code>signature</code>, <code>aud</code>, <code>iss</code>, <code>exp</code>, <code>nonce</code>, <code>kid</code>, <code>at_hash</code>. Spikes in <code>kid</code>-failures = key rotation drama.</li>
+          <li><span class="g"><code>oidc.jwks.refresh{outcome}</code></span> — alert if more than 1 % of validations trigger a refresh.</li>
+          <li><span class="g"><code>oidc.flow.duration_ms</code></span> — quantiles by step (<code>par</code> · <code>authorize</code> · <code>token</code> · <code>userinfo</code>). Most outages first show as a token-endpoint p99 climb.</li>
+          <li><span class="g"><code>oidc.refresh.reuse_detected</code></span> — every event is a probable token theft.</li>
+        </ul>
+      </div>
+      <div class="card green" style="margin-top:0.4em;">
+        <h3 class="g">RP-side logs (per request)</h3>
+        <ul>
+          <li><code>iss</code>, <code>sub</code> (hashed if user-linkable in cold storage), <code>aud</code>, <code>azp</code>, <code>scope</code>, <code>amr</code>, <code>acr</code>, <code>auth_time</code>.</li>
+          <li><span class="r">Never</span>: the raw token, the ID token's PII (email, given_name) at INFO level.</li>
+          <li>Correlate by <code>jti</code> + a flow-id you generate on <code>/authorize</code> and propagate through.</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card purple">
+        <h3 class="p">OP-side metrics that catch attacks early</h3>
+        <ul>
+          <li>Authorisation-endpoint <span class="a">PKCE-mismatch</span> rate (CSRF/replay attempts).</li>
+          <li>Per-client / per-IP <span class="a">redirect_uri</span> mismatch — trivial misconfig <em>or</em> exfil attempt.</li>
+          <li>DCR creation rate per source IP / ASN — abuse vector for open registration.</li>
+          <li>Refresh-token reuse alerts (compromise indicator).</li>
+          <li>Anomalous <code>acr</code> downgrades (the OP is failing to enforce step-up).</li>
+        </ul>
+      </div>
+      <div class="card blue" style="margin-top:0.4em;">
+        <h3 class="b">SIEM events worth wiring up</h3>
+        <ul>
+          <li>Logout-token POST failures from the OP (an RP went silent — sessions stay alive).</li>
+          <li>Successful <code>/par</code> with no follow-up <code>/authorize</code> (probing).</li>
+          <li>JWKS fetched from outside expected CIDRs.</li>
+          <li>Federation entity-statement signature failures (someone is fiddling with the trust chain).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 20 — MIGRATION ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">19</span>
+    <h2>D5 &middot; Migration Playbooks</h2>
+  </div>
+
+  <div class="cols cols-3">
+    <div class="card amber">
+      <h3 class="a">SAML → OIDC</h3>
+      <ol style="padding-left:1.2em;">
+        <li>Stand up an OIDC OP that <em>also</em> brokers the existing SAML IdP — users see no UI change.</li>
+        <li>Migrate one RP at a time to OIDC; OP issues both an OIDC ID token <em>and</em> (where needed) a SAML assertion.</li>
+        <li>Map the SAML <code>NameID</code> into the OIDC <code>sub</code> with care — once-only mapping table.</li>
+        <li>Translate SAML <code>AuthnContextClassRef</code> values to OIDC <code>acr_values</code>.</li>
+        <li>Decommission the SAML IdP only after every RP is OIDC <em>and</em> log audit shows zero SAML assertions for ≥ 30 days.</li>
+      </ol>
+    </div>
+    <div class="card green">
+      <h3 class="g">Monolith → Federated OPs</h3>
+      <ol style="padding-left:1.2em;">
+        <li>Carve the user-account service out of the monolith into an OP behind a stable issuer URL.</li>
+        <li>Issue OIDC sessions in parallel with the legacy session cookie; both valid.</li>
+        <li>Migrate one bounded context at a time to consume the OIDC ID token instead of the legacy cookie.</li>
+        <li>Cut the legacy cookie issuance off by date; keep it as <em>read</em> for ≥ 1 refresh-token max-lifetime.</li>
+        <li>Adopt PAR + DPoP only after the basic migration is done — don't try to do both in one quarter.</li>
+      </ol>
+    </div>
+    <div class="card purple">
+      <h3 class="p">OAuth-only → OIDC</h3>
+      <ol style="padding-left:1.2em;">
+        <li>Add the <code>openid</code> scope to your existing flows.</li>
+        <li>Have the AS start issuing ID tokens; clients ignore them at first.</li>
+        <li>Move every "who is this user" decision off introspection-of-access-token onto the ID-token <code>sub</code>.</li>
+        <li>Add discovery (<code>/.well-known/openid-configuration</code>) and start consuming JWKS.</li>
+        <li>Wire up logout (back-channel) and consent UX last.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card blue" style="margin-top:0.4em;">
+    <h3 class="b">Lessons from real migrations</h3>
+    <ul>
+      <li>Estimate "every place where a username is stored" — it's always 5×–10× what you think.</li>
+      <li>Don't migrate <em>and</em> harden in the same quarter. Do the protocol move first; layer FAPI 2.0 on the stable result.</li>
+      <li>Issuer URL is forever. Pick a canonical hostname (<code>https://login.acme.com/</code>) before launch — every RP, mobile app, partner integration will pin it.</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 21 — REFERENCE ARCHITECTURES ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">20</span>
+    <h2>D6 &middot; Reference Architectures by Domain</h2>
+  </div>
+
+  <table>
+    <thead><tr><th>Domain</th><th>Profile</th><th>Stack</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="a">UK Open Banking</span></td>
+        <td>FAPI 1 → FAPI 2</td>
+        <td>OIDC OP at the bank · PAR · mTLS · <code>private_key_jwt</code> · request objects · UK Trust Framework directory.</td>
+      </tr>
+      <tr>
+        <td><span class="a">Open Banking Brazil</span></td>
+        <td>FAPI 2 + Message Signing</td>
+        <td>JAR + JARM + DPoP/mTLS · OpenID Federation 1.0 · Brazilian Central Bank as trust anchor.</td>
+      </tr>
+      <tr>
+        <td><span class="a">eIDAS 2.0 / EUDI Wallet</span></td>
+        <td>SIOPv2 + OpenID4VCI + OpenID4VP</td>
+        <td>PID Provider issues SD-JWT VC into the wallet · RP requests via OpenID4VP · Federation 1.0 trust chain to a national TA.</td>
+      </tr>
+      <tr>
+        <td><span class="a">FHIR / SMART on FHIR</span></td>
+        <td>OAuth 2 + OIDC + scopes like <code>patient/Observation.read</code></td>
+        <td>OIDC OP + EHR as RS · launch context via launch parameters · sometimes FAPI in regulated jurisdictions.</td>
+      </tr>
+      <tr>
+        <td><span class="a">EduGAIN / Research</span></td>
+        <td>OpenID Federation 1.0 + REFEDS schema</td>
+        <td>Federation across 5,000+ universities, replacing SAML eduGAIN with OIDC equivalents.</td>
+      </tr>
+      <tr>
+        <td><span class="a">US Government LOA / NIST 800-63</span></td>
+        <td>OIDC + <code>acr_values</code> mapped to IAL/AAL</td>
+        <td>Login.gov / ID.me as OPs · AAL2/AAL3 enforced via <code>acr_values</code> + amr.</td>
+      </tr>
+      <tr>
+        <td><span class="a">B2B SaaS multi-tenant</span></td>
+        <td>OIDC OP + SCIM + SAML fallback</td>
+        <td>WorkOS / Auth0 / Okta CIC as broker · per-tenant identity provider connections · SCIM for provisioning.</td>
+      </tr>
+      <tr>
+        <td><span class="a">Workload identity</span></td>
+        <td>OIDC issuer per platform</td>
+        <td>GitHub Actions / GCP Workload Identity / Kubernetes ServiceAccountTokenVolume / SPIFFE/SPIRE · short-lived JWTs only.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+
+<!-- ═══════════════════════════════ SLIDE 22 — SUMMARY ═══════════════════════════════ -->
+<section data-background-color="#0a0a0f">
+  <div class="slide-hdr">
+    <span class="tag">21</span>
+    <h2>Summary &amp; References</h2>
+  </div>
+  <div class="cols cols-2">
+    <div>
+      <div class="card amber">
+        <h3 class="a">What we covered</h3>
+        <ul>
+          <li><span class="b">Hardening</span> — validation edge cases, <code>aud</code>/<code>azp</code>, pairwise subjects, PAR, JAR, JARM, FAPI 2.0, mTLS / <code>private_key_jwt</code> / DPoP, three logout specs, Token Exchange.</li>
+          <li><span class="b">Federation</span> — OpenID Federation 1.0 trust chains, eIDAS 2.0 + EUDI Wallet, real-world ecosystems.</li>
+          <li><span class="b">Wallet-era</span> — SIOPv2 + OpenID4VCI + OpenID4VP, ISO mDL, SD-JWT VC vs mDoc.</li>
+          <li><span class="b">Operational</span> — workload OIDC (GHA / GCP / K8s), aggregated/distributed claims, MFA UX (<code>prompt</code> / <code>max_age</code> / <code>acr_values</code> / <code>amr</code>), observability, migration playbooks, domain reference architectures.</li>
+        </ul>
+      </div>
+      <div class="card blue" style="margin-top:0.4em;">
+        <h3 class="b">Companion decks</h3>
+        <p><span class="a">Introduction to OpenID Connect</span> — the foundations this deck assumes.<br>
+        <span class="a">OAuth — A Gentle Primer</span> · <span class="a">Introduction to OAuth</span> · <span class="a">OAuth for MCP Servers</span> — the OAuth series.</p>
+      </div>
+    </div>
+    <div>
+      <div class="card green">
+        <h3 class="g">Three take-aways</h3>
+        <ol style="padding-left:1.2em;">
+          <li><span class="a">Validate <code>aud</code> with <code>azp</code>.</span> The single biggest class of OIDC bugs is treating multi-audience tokens as single-audience.</li>
+          <li><span class="a">If you handle anything regulated, you're heading for FAPI 2.0.</span> PAR + JAR/JARM + sender-constrained tokens + <code>private_key_jwt</code> — and <em>certify</em>, don't self-attest.</li>
+          <li><span class="a">The wallet stack is the next battleground.</span> SIOPv2 + OpenID4VP + Federation 1.0 are the EU baseline; the rest of the world is converging.</li>
+        </ol>
+      </div>
+      <div class="card purple" style="margin-top:0.4em;">
+        <h3 class="p">References</h3>
+        <p>OpenID Connect Core 1.0 &middot; OIDC Discovery &middot; OIDC Dynamic Client Registration &middot; OIDC RP-Initiated / Back-Channel / Front-Channel Logout &middot; CIBA Core 1.0 &middot; SIOPv2 &middot; OpenID for Verifiable Credential Issuance (OpenID4VCI) &middot; OpenID for Verifiable Presentations (OpenID4VP) &middot; OpenID Federation 1.0 (Sep 2024) &middot; FAPI 2.0 Security Profile &middot; FAPI 2.0 Message Signing &middot; ISO/IEC 18013-5 / 18013-7 (mDL) &middot; eIDAS 2.0 Regulation (EU) 2024/1183 &middot; SD-JWT (draft-ietf-oauth-selective-disclosure-jwt) &middot; SD-JWT VC &middot; RFC 7515/7517/7519 (JWS/JWK/JWT) &middot; RFC 7523 (JWT client auth) &middot; RFC 8414 / 8628 / 8693 / 8705 / 8707 &middot; RFC 9068 (JWT AT) &middot; RFC 9101 (JAR) &middot; RFC 9126 (PAR) &middot; RFC 9207 (iss param) &middot; RFC 9396 (RAR) &middot; RFC 9449 (DPoP) &middot; RFC 9700 (BCP 240) &middot; RFC 9728 (Protected Resource Metadata) &middot; openid.net/certification</p>
+      </div>
+      <div class="card red" style="margin-top:0.4em;">
+        <h3 class="r">One-line takeaway</h3>
+        <p>The basic protocol is a small spec; production OIDC is the <em>profiles</em>. Pick the right profile for your domain (FAPI 2.0, EUDI, workload), and certify it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+</div><!-- /.slides -->
+</div><!-- /.reveal -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/highlight/highlight.min.js"></script>
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: 'c/t',
+  transition: 'fade',
+  transitionSpeed: 'fast',
+  controls: true,
+  progress: true,
+  center: false,
+  width: 1100,
+  height: 900,
+  margin: 0.01,
+  plugins: [RevealHighlight],
+  highlight: { theme: 'monokai' }
+});
+</script>
+<script>
+(function(){
+  var h = Reveal.getConfig().height || 900;
+  var m = Reveal.getConfig().margin || 0.02;
+  var maxH = Math.floor(h * (1 - 2 * m)) + 'px';
+  function fixSlides(){
+    document.querySelectorAll('.reveal .slides>section,.reveal .slides>section>section').forEach(function(s){
+      s.style.display = 'block';
+      s.style.maxHeight = maxH;
+    });
+  }
+  Reveal.on('ready', fixSlides);
+  Reveal.on('slidechanged', fixSlides);
+})();
+</script>
+</body>
+</html>
