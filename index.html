@@ -11,17 +11,17 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/black.min.css">
 <style>
   :root {
-    --amber:  #f5a623;
-    --green:  #4ecb8d;
-    --purple: #a78bfa;
-    --blue:   #60a5fa;
-    --red:    #f87171;
-    --bg:     #0a0a0f;
-    --bg2:    #10101a;
-    --bg3:    #181824;
-    --border: #2a2a3a;
-    --text:   #e8e8f0;
-    --muted:  #8888a8;
+    --amber:  #cfad64;
+    --green:  #8fc9a1;
+    --purple: #b2a3d0;
+    --blue:   #93b6cd;
+    --red:    #da7d6b;
+    --bg:     #0f231c;
+    --bg2:    #132a22;
+    --bg3:    #173028;
+    --border: #29483d;
+    --text:   #ede8d8;
+    --muted:  #829b90;
   }
 
   .reveal-viewport { background: var(--bg); }
@@ -37,7 +37,7 @@
   .reveal code { font-family: 'JetBrains Mono', monospace; font-size: .72em; }
   .reveal pre  { box-shadow: none; background: var(--bg3); border: 1px solid var(--border);
                  border-radius: 6px; padding: .3em .5em; margin: .25em 0; }
-  .reveal pre code { font-size: .52em; line-height: 1.35; background: transparent; color: #cdd6f4; }
+  .reveal pre code { font-size: .52em; line-height: 1.35; background: transparent; color: #d9dcce; }
 
   .slide-hdr {
     display: flex; align-items: center; gap: .4em;
@@ -69,15 +69,15 @@
   .card.blue  { border-left: 3px solid var(--blue); }
   .card.red   { border-left: 3px solid var(--red); }
   .card h3 { font-size: .64em; margin: 0 0 .12em; }
-  .card p  { font-size: .52em; margin: 0; color: #b8b8d0; }
+  .card p  { font-size: .52em; margin: 0; color: #b9c8bc; }
   .card ul { margin: 0; padding-left: 1em; }
-  .card li { font-size: .52em; color: #b8b8d0; margin-bottom: .02em; }
+  .card li { font-size: .52em; color: #b9c8bc; margin-bottom: .02em; }
 
   .reveal table { width: 100%; border-collapse: collapse; font-size: .5em; }
   .reveal table th { background: var(--bg3); color: var(--amber); font-weight: 600;
                      padding: .2em .4em; border: 1px solid var(--border); text-align: left; }
-  .reveal table td { padding: .18em .4em; border: 1px solid var(--border); color: #ccc; }
-  .reveal table tr:nth-child(even) td { background: #0e0e18; }
+  .reveal table td { padding: .18em .4em; border: 1px solid var(--border); color: #ccd5c7; }
+  .reveal table tr:nth-child(even) td { background: #122820; }
 
   .a  { color: var(--amber); font-weight: 600; }
   .g  { color: var(--green); font-weight: 600; }
@@ -114,8 +114,8 @@
     padding: .2em .55em; border-radius: 5px; font-size: .9em;
     background: var(--bg3); border: 1px solid var(--border); color: var(--text);
   }
-  .ss-node.active { background: #1a2a1a; border-color: var(--green); color: var(--green); }
-  .ss-node.done   { background: #1a1a2a; border-color: var(--purple); color: var(--purple); }
+  .ss-node.active { background: #2f3e35; border-color: var(--green); color: var(--green); }
+  .ss-node.done   { background: #19342a; border-color: var(--purple); color: var(--purple); }
   .ss-arrow { color: var(--amber); }
   .ss-label { font-size: .8em; color: var(--muted); margin-left: .3em; }
 
@@ -129,7 +129,7 @@
 
 
 <!-- ═══════════════════════════════ SLIDE 01 — TITLE ═══════════════════════════════ -->
-<section class="title-slide" data-background-color="#0a0a0f">
+<section class="title-slide" data-background-color="#0f231c">
   <div style="text-align:left; max-width:820px; margin:0 auto; padding: 1em 0;">
     <div style="font-family:'JetBrains Mono',monospace; font-size:.5em; color:var(--muted); margin-bottom:.4em; letter-spacing:.1em;">
       TECHNICAL PRESENTATION &middot; ADVANCED COMPANION
@@ -154,7 +154,7 @@
       <span class="ss-arrow">→</span>
       <span class="ss-node done">Wallet</span>
     </div>
-    <p style="max-width:660px; color:#a0a0c0; font-size:.56em; line-height:1.5; margin-top:1em;">
+    <p style="max-width:660px; color:#9fb3a8; font-size:.56em; line-height:1.5; margin-top:1em;">
       The deep end of OpenID Connect: the validation edge cases, the high-security profiles, the federation specs that are actually being deployed in 2026, the wallet-era stack (EUDI / mDL), and the operational patterns for production OPs.
     </p>
     <div class="meta" style="margin-top:1.4em;">
@@ -165,7 +165,7 @@
 
 
 <!-- ═══════════════════════════════ SLIDE 02 — TOPICS ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">01</span>
     <h2>Topics — Four Chapters</h2>
@@ -223,7 +223,7 @@
 
 
 <!-- ═══════════════════════════════ SLIDE 03 — VALIDATION EDGE CASES ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">02</span>
     <h2>A1 &middot; ID-Token Validation Edge Cases</h2>
@@ -279,7 +279,7 @@
 
 
 <!-- ═══════════════════════════════ SLIDE 04 — AUD WARS ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">03</span>
     <h2>A2 &middot; The <code>aud</code> Wars — Multi-Audience &amp; <code>azp</code></h2>
@@ -343,7 +343,7 @@
 
 
 <!-- ═══════════════════════════════ SLIDE 05 — PAIRWISE SUBJECTS ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">04</span>
     <h2>A3 &middot; Pairwise &amp; Public Subject Identifiers</h2>
@@ -395,7 +395,7 @@ GET https://app.example/.well-known/oidc-sector-uris
 
 
 <!-- ═══════════════════════════════ SLIDE 06 — PAR ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">05</span>
     <h2>A4 &middot; Pushed Authorization Requests (PAR) — RFC 9126</h2>
@@ -403,34 +403,34 @@ GET https://app.example/.well-known/oidc-sector-uris
   <p>Classical OIDC stuffs every authorisation parameter into the front-channel URL. <span class="a">PAR</span> instead POSTs them to a back-channel endpoint up-front, gets back a one-time <code>request_uri</code>, and uses that on <code>/authorize</code>.</p>
 
   <svg class="diagram" viewBox="0 0 940 240" width="900" height="240">
-    <rect x="20"  y="20" width="160" height="38" rx="5" fill="#1a1a2a" stroke="#f5a623" stroke-width="1.5"/>
-    <text x="100" y="44" text-anchor="middle" fill="#f5a623" font-family="Playfair Display,serif" font-size="13" font-weight="700">RP</text>
-    <rect x="430" y="20" width="160" height="38" rx="5" fill="#1a1a2a" stroke="#a78bfa" stroke-width="1.5"/>
-    <text x="510" y="44" text-anchor="middle" fill="#a78bfa" font-family="Playfair Display,serif" font-size="13" font-weight="700">OP</text>
-    <rect x="740" y="20" width="160" height="38" rx="5" fill="#1a1a2a" stroke="#60a5fa" stroke-width="1.5"/>
-    <text x="820" y="44" text-anchor="middle" fill="#60a5fa" font-family="Playfair Display,serif" font-size="13" font-weight="700">User-Agent</text>
+    <rect x="20"  y="20" width="160" height="38" rx="5" fill="#19342a" stroke="#cfad64" stroke-width="1.5"/>
+    <text x="100" y="44" text-anchor="middle" fill="#cfad64" font-family="Playfair Display,serif" font-size="13" font-weight="700">RP</text>
+    <rect x="430" y="20" width="160" height="38" rx="5" fill="#19342a" stroke="#b2a3d0" stroke-width="1.5"/>
+    <text x="510" y="44" text-anchor="middle" fill="#b2a3d0" font-family="Playfair Display,serif" font-size="13" font-weight="700">OP</text>
+    <rect x="740" y="20" width="160" height="38" rx="5" fill="#19342a" stroke="#93b6cd" stroke-width="1.5"/>
+    <text x="820" y="44" text-anchor="middle" fill="#93b6cd" font-family="Playfair Display,serif" font-size="13" font-weight="700">User-Agent</text>
 
-    <line x1="100" y1="58" x2="100" y2="220" stroke="#2a2a3a" stroke-width="1" stroke-dasharray="3,3"/>
-    <line x1="510" y1="58" x2="510" y2="220" stroke="#2a2a3a" stroke-width="1" stroke-dasharray="3,3"/>
-    <line x1="820" y1="58" x2="820" y2="220" stroke="#2a2a3a" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="100" y1="58" x2="100" y2="220" stroke="#29483d" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="510" y1="58" x2="510" y2="220" stroke="#29483d" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="820" y1="58" x2="820" y2="220" stroke="#29483d" stroke-width="1" stroke-dasharray="3,3"/>
 
-    <line x1="180" y1="80"  x2="430" y2="80"  stroke="#f5a623" stroke-width="1.4" marker-end="url(#a05a)"/>
-    <text x="305" y="75" text-anchor="middle" fill="#f5a623" font-family="JetBrains Mono,monospace" font-size="10">1. POST /par  client_auth + all params</text>
-    <line x1="430" y1="105" x2="180" y2="105" stroke="#a78bfa" stroke-width="1.4" marker-end="url(#a05p)"/>
-    <text x="305" y="100" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono,monospace" font-size="10">2. { request_uri: "urn:ietf:params:…", expires_in: 60 }</text>
-    <line x1="180" y1="135" x2="740" y2="135" stroke="#f5a623" stroke-width="1.2" marker-end="url(#a05a)"/>
-    <text x="460" y="130" text-anchor="middle" fill="#f5a623" font-family="JetBrains Mono,monospace" font-size="10">3. redirect user to /authorize?client_id=…&amp;request_uri=urn:…</text>
-    <line x1="740" y1="160" x2="510" y2="160" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#a05b)"/>
-    <text x="625" y="155" text-anchor="middle" fill="#60a5fa" font-family="JetBrains Mono,monospace" font-size="10">4. GET /authorize?…request_uri=…</text>
-    <line x1="510" y1="185" x2="180" y2="185" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#a05p)"/>
-    <text x="345" y="180" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono,monospace" font-size="10">5. login + consent → 302 cb?code=…&amp;state=…</text>
+    <line x1="180" y1="80"  x2="430" y2="80"  stroke="#cfad64" stroke-width="1.4" marker-end="url(#844658aa)"/>
+    <text x="305" y="75" text-anchor="middle" fill="#cfad64" font-family="JetBrains Mono,monospace" font-size="10">1. POST /par  client_auth + all params</text>
+    <line x1="430" y1="105" x2="180" y2="105" stroke="#b2a3d0" stroke-width="1.4" marker-end="url(#a05p)"/>
+    <text x="305" y="100" text-anchor="middle" fill="#b2a3d0" font-family="JetBrains Mono,monospace" font-size="10">2. { request_uri: "urn:ietf:params:…", expires_in: 60 }</text>
+    <line x1="180" y1="135" x2="740" y2="135" stroke="#cfad64" stroke-width="1.2" marker-end="url(#844658aa)"/>
+    <text x="460" y="130" text-anchor="middle" fill="#cfad64" font-family="JetBrains Mono,monospace" font-size="10">3. redirect user to /authorize?client_id=…&amp;request_uri=urn:…</text>
+    <line x1="740" y1="160" x2="510" y2="160" stroke="#93b6cd" stroke-width="1.2" marker-end="url(#844658bb)"/>
+    <text x="625" y="155" text-anchor="middle" fill="#93b6cd" font-family="JetBrains Mono,monospace" font-size="10">4. GET /authorize?…request_uri=…</text>
+    <line x1="510" y1="185" x2="180" y2="185" stroke="#b2a3d0" stroke-width="1.2" marker-end="url(#a05p)"/>
+    <text x="345" y="180" text-anchor="middle" fill="#b2a3d0" font-family="JetBrains Mono,monospace" font-size="10">5. login + consent → 302 cb?code=…&amp;state=…</text>
 
-    <text x="455" y="215" text-anchor="middle" fill="#888" font-family="DM Sans,sans-serif" font-size="11">Front-channel URL now carries only <tspan font-family="JetBrains Mono,monospace">client_id</tspan> + <tspan font-family="JetBrains Mono,monospace">request_uri</tspan> &middot; no parameter tampering by user.</text>
+    <text x="455" y="215" text-anchor="middle" fill="#7c968b" font-family="DM Sans,sans-serif" font-size="11">Front-channel URL now carries only <tspan font-family="JetBrains Mono,monospace">client_id</tspan> + <tspan font-family="JetBrains Mono,monospace">request_uri</tspan> &middot; no parameter tampering by user.</text>
 
     <defs>
-      <marker id="a05a" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#f5a623"/></marker>
-      <marker id="a05p" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#a78bfa"/></marker>
-      <marker id="a05b" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#60a5fa"/></marker>
+      <marker id="a05a" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#cfad64"/></marker>
+      <marker id="a05p" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#b2a3d0"/></marker>
+      <marker id="a05b" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#93b6cd"/></marker>
     </defs>
   </svg>
 
@@ -453,7 +453,7 @@ GET https://app.example/.well-known/oidc-sector-uris
 
 
 <!-- ═══════════════════════════════ SLIDE 07 — JAR / JARM ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">06</span>
     <h2>A5 &middot; JAR &amp; JARM — Signed Requests &amp; Responses</h2>
@@ -525,7 +525,7 @@ GET /cb?response=eyJhbGciOiJSUzI1NiI…
 
 
 <!-- ═══════════════════════════════ SLIDE 08 — FAPI 2.0 ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">07</span>
     <h2>A6 &middot; FAPI 2.0 — Financial-Grade OIDC</h2>
@@ -579,7 +579,7 @@ GET /cb?response=eyJhbGciOiJSUzI1NiI…
 
 
 <!-- ═══════════════════════════════ SLIDE 09 — MTLS / DPOP / PRIVATE KEY JWT ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">08</span>
     <h2>A7 &middot; mTLS &middot; <code>private_key_jwt</code> &middot; DPoP</h2>
@@ -651,7 +651,7 @@ client_assertion=eyJhbGc…   ← the JWS
 
 
 <!-- ═══════════════════════════════ SLIDE 10 — LOGOUT ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">09</span>
     <h2>A8 &middot; Logout, Properly</h2>
@@ -714,7 +714,7 @@ logout_token=eyJ…  // a signed JWT
 
 
 <!-- ═══════════════════════════════ SLIDE 11 — TOKEN EXCHANGE ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">10</span>
     <h2>A9 &middot; Token Exchange &amp; On-Behalf-Of (RFC 8693)</h2>
@@ -781,7 +781,7 @@ scope=invoices:read
 
 
 <!-- ═══════════════════════════════ SLIDE 12 — FEDERATION 1.0 ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">11</span>
     <h2>B1 &middot; OpenID Federation 1.0 — Trust Chains</h2>
@@ -790,39 +790,39 @@ scope=invoices:read
 
   <svg class="diagram" viewBox="0 0 940 280" width="900" height="280">
     <!-- Trust anchor -->
-    <rect x="380" y="20" width="200" height="50" rx="8" fill="#1a1a2a" stroke="#f5a623" stroke-width="2"/>
-    <text x="480" y="42" text-anchor="middle" fill="#f5a623" font-family="Playfair Display,serif" font-size="14" font-weight="700">Trust Anchor</text>
-    <text x="480" y="60" text-anchor="middle" fill="#ccc" font-family="JetBrains Mono,monospace" font-size="10">e.g. NHS / eIDAS / EduGAIN</text>
+    <rect x="380" y="20" width="200" height="50" rx="8" fill="#19342a" stroke="#cfad64" stroke-width="2"/>
+    <text x="480" y="42" text-anchor="middle" fill="#cfad64" font-family="Playfair Display,serif" font-size="14" font-weight="700">Trust Anchor</text>
+    <text x="480" y="60" text-anchor="middle" fill="#ccd5c7" font-family="JetBrains Mono,monospace" font-size="10">e.g. NHS / eIDAS / EduGAIN</text>
 
     <!-- Intermediates -->
-    <line x1="480" y1="70"  x2="200" y2="110" stroke="#888" stroke-width="1.2"/>
-    <line x1="480" y1="70"  x2="760" y2="110" stroke="#888" stroke-width="1.2"/>
-    <rect x="80"  y="110" width="240" height="50" rx="6" fill="#1a1a2a" stroke="#a78bfa" stroke-width="1.5"/>
-    <text x="200" y="132" text-anchor="middle" fill="#a78bfa" font-family="Playfair Display,serif" font-size="13" font-weight="700">Intermediate</text>
-    <text x="200" y="150" text-anchor="middle" fill="#ccc" font-family="JetBrains Mono,monospace" font-size="10">e.g. one country in eIDAS</text>
-    <rect x="640" y="110" width="240" height="50" rx="6" fill="#1a1a2a" stroke="#a78bfa" stroke-width="1.5"/>
-    <text x="760" y="132" text-anchor="middle" fill="#a78bfa" font-family="Playfair Display,serif" font-size="13" font-weight="700">Intermediate</text>
-    <text x="760" y="150" text-anchor="middle" fill="#ccc" font-family="JetBrains Mono,monospace" font-size="10">e.g. a hospital trust</text>
+    <line x1="480" y1="70"  x2="200" y2="110" stroke="#7c968b" stroke-width="1.2"/>
+    <line x1="480" y1="70"  x2="760" y2="110" stroke="#7c968b" stroke-width="1.2"/>
+    <rect x="80"  y="110" width="240" height="50" rx="6" fill="#19342a" stroke="#b2a3d0" stroke-width="1.5"/>
+    <text x="200" y="132" text-anchor="middle" fill="#b2a3d0" font-family="Playfair Display,serif" font-size="13" font-weight="700">Intermediate</text>
+    <text x="200" y="150" text-anchor="middle" fill="#ccd5c7" font-family="JetBrains Mono,monospace" font-size="10">e.g. one country in eIDAS</text>
+    <rect x="640" y="110" width="240" height="50" rx="6" fill="#19342a" stroke="#b2a3d0" stroke-width="1.5"/>
+    <text x="760" y="132" text-anchor="middle" fill="#b2a3d0" font-family="Playfair Display,serif" font-size="13" font-weight="700">Intermediate</text>
+    <text x="760" y="150" text-anchor="middle" fill="#ccd5c7" font-family="JetBrains Mono,monospace" font-size="10">e.g. a hospital trust</text>
 
     <!-- Leaves -->
-    <line x1="200" y1="160" x2="120" y2="200" stroke="#888" stroke-width="1.2"/>
-    <line x1="200" y1="160" x2="280" y2="200" stroke="#888" stroke-width="1.2"/>
-    <line x1="760" y1="160" x2="680" y2="200" stroke="#888" stroke-width="1.2"/>
-    <line x1="760" y1="160" x2="840" y2="200" stroke="#888" stroke-width="1.2"/>
-    <rect x="40"  y="200" width="160" height="46" rx="5" fill="#1a1a2a" stroke="#4ecb8d"/>
-    <text x="120" y="222" text-anchor="middle" fill="#4ecb8d" font-family="JetBrains Mono,monospace" font-size="10">leaf — RP (Bank A)</text>
-    <text x="120" y="238" text-anchor="middle" fill="#888" font-family="JetBrains Mono,monospace" font-size="9">issues entity statement</text>
-    <rect x="220" y="200" width="160" height="46" rx="5" fill="#1a1a2a" stroke="#4ecb8d"/>
-    <text x="300" y="222" text-anchor="middle" fill="#4ecb8d" font-family="JetBrains Mono,monospace" font-size="10">leaf — OP (eIDAS node)</text>
-    <text x="300" y="238" text-anchor="middle" fill="#888" font-family="JetBrains Mono,monospace" font-size="9">issues entity statement</text>
-    <rect x="600" y="200" width="160" height="46" rx="5" fill="#1a1a2a" stroke="#4ecb8d"/>
-    <text x="680" y="222" text-anchor="middle" fill="#4ecb8d" font-family="JetBrains Mono,monospace" font-size="10">leaf — OP (NHS Trust)</text>
-    <text x="680" y="238" text-anchor="middle" fill="#888" font-family="JetBrains Mono,monospace" font-size="9">issues entity statement</text>
-    <rect x="780" y="200" width="160" height="46" rx="5" fill="#1a1a2a" stroke="#4ecb8d"/>
-    <text x="860" y="222" text-anchor="middle" fill="#4ecb8d" font-family="JetBrains Mono,monospace" font-size="10">leaf — RP (FHIR API)</text>
-    <text x="860" y="238" text-anchor="middle" fill="#888" font-family="JetBrains Mono,monospace" font-size="9">issues entity statement</text>
+    <line x1="200" y1="160" x2="120" y2="200" stroke="#7c968b" stroke-width="1.2"/>
+    <line x1="200" y1="160" x2="280" y2="200" stroke="#7c968b" stroke-width="1.2"/>
+    <line x1="760" y1="160" x2="680" y2="200" stroke="#7c968b" stroke-width="1.2"/>
+    <line x1="760" y1="160" x2="840" y2="200" stroke="#7c968b" stroke-width="1.2"/>
+    <rect x="40"  y="200" width="160" height="46" rx="5" fill="#19342a" stroke="#8fc9a1"/>
+    <text x="120" y="222" text-anchor="middle" fill="#8fc9a1" font-family="JetBrains Mono,monospace" font-size="10">leaf — RP (Bank A)</text>
+    <text x="120" y="238" text-anchor="middle" fill="#7c968b" font-family="JetBrains Mono,monospace" font-size="9">issues entity statement</text>
+    <rect x="220" y="200" width="160" height="46" rx="5" fill="#19342a" stroke="#8fc9a1"/>
+    <text x="300" y="222" text-anchor="middle" fill="#8fc9a1" font-family="JetBrains Mono,monospace" font-size="10">leaf — OP (eIDAS node)</text>
+    <text x="300" y="238" text-anchor="middle" fill="#7c968b" font-family="JetBrains Mono,monospace" font-size="9">issues entity statement</text>
+    <rect x="600" y="200" width="160" height="46" rx="5" fill="#19342a" stroke="#8fc9a1"/>
+    <text x="680" y="222" text-anchor="middle" fill="#8fc9a1" font-family="JetBrains Mono,monospace" font-size="10">leaf — OP (NHS Trust)</text>
+    <text x="680" y="238" text-anchor="middle" fill="#7c968b" font-family="JetBrains Mono,monospace" font-size="9">issues entity statement</text>
+    <rect x="780" y="200" width="160" height="46" rx="5" fill="#19342a" stroke="#8fc9a1"/>
+    <text x="860" y="222" text-anchor="middle" fill="#8fc9a1" font-family="JetBrains Mono,monospace" font-size="10">leaf — RP (FHIR API)</text>
+    <text x="860" y="238" text-anchor="middle" fill="#7c968b" font-family="JetBrains Mono,monospace" font-size="9">issues entity statement</text>
 
-    <text x="465" y="270" text-anchor="middle" fill="#888" font-family="DM Sans,sans-serif" font-size="11">Each node publishes a <tspan font-family="JetBrains Mono,monospace">/.well-known/openid-federation</tspan> entity statement signed by its parent. RP follows the chain to the trust anchor.</text>
+    <text x="465" y="270" text-anchor="middle" fill="#7c968b" font-family="DM Sans,sans-serif" font-size="11">Each node publishes a <tspan font-family="JetBrains Mono,monospace">/.well-known/openid-federation</tspan> entity statement signed by its parent. RP follows the chain to the trust anchor.</text>
   </svg>
 
   <div class="cols cols-2" style="margin-top:0.2em;">
@@ -844,7 +844,7 @@ scope=invoices:read
 
 
 <!-- ═══════════════════════════════ SLIDE 13 — EIDAS / EUDI ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">12</span>
     <h2>B2 &middot; eIDAS 2.0 &amp; the EUDI Wallet Ecosystem</h2>
@@ -894,7 +894,7 @@ scope=invoices:read
 
 
 <!-- ═══════════════════════════════ SLIDE 14 — SIOPV2 + VCI + VP ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">13</span>
     <h2>C1 &middot; The Wallet Stack — SIOPv2 + VCI + VP</h2>
@@ -943,7 +943,7 @@ scope=invoices:read
 
 
 <!-- ═══════════════════════════════ SLIDE 15 — MDL ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">14</span>
     <h2>C2 &middot; ISO mDL &middot; The Other Half of the Wallet World</h2>
@@ -994,7 +994,7 @@ scope=invoices:read
 
 
 <!-- ═══════════════════════════════ SLIDE 16 — WORKLOAD OIDC ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">15</span>
     <h2>D1 &middot; Workload OIDC Deep Dive</h2>
@@ -1053,7 +1053,7 @@ steps:
 
 
 <!-- ═══════════════════════════════ SLIDE 17 — CLAIMS ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">16</span>
     <h2>D2 &middot; Aggregated &amp; Distributed Claims, the <code>claims</code> Parameter</h2>
@@ -1113,7 +1113,7 @@ claims={
 
 
 <!-- ═══════════════════════════════ SLIDE 18 — STEP-UP / MFA UX ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">17</span>
     <h2>D3 &middot; Demanding MFA — <code>prompt</code>, <code>max_age</code>, <code>acr_values</code>, <code>amr</code></h2>
@@ -1163,7 +1163,7 @@ GET /authorize?
 
 
 <!-- ═══════════════════════════════ SLIDE 19 — OBSERVABILITY ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">18</span>
     <h2>D4 &middot; Observability — What to Log, What to Alert On</h2>
@@ -1215,7 +1215,7 @@ GET /authorize?
 
 
 <!-- ═══════════════════════════════ SLIDE 20 — MIGRATION ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">19</span>
     <h2>D5 &middot; Migration Playbooks</h2>
@@ -1266,7 +1266,7 @@ GET /authorize?
 
 
 <!-- ═══════════════════════════════ SLIDE 21 — REFERENCE ARCHITECTURES ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">20</span>
     <h2>D6 &middot; Reference Architectures by Domain</h2>
@@ -1321,7 +1321,7 @@ GET /authorize?
 
 
 <!-- ═══════════════════════════════ SLIDE 22 — SUMMARY ═══════════════════════════════ -->
-<section data-background-color="#0a0a0f">
+<section data-background-color="#0f231c">
   <div class="slide-hdr">
     <span class="tag">21</span>
     <h2>Summary &amp; References</h2>
